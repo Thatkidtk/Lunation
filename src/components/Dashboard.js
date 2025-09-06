@@ -32,10 +32,23 @@ function Dashboard() {
     return diffDays;
   };
 
+  const getConfidenceColor = (confidence) => {
+    if (confidence >= 80) return '#28a745';
+    if (confidence >= 60) return '#ffc107';
+    return '#dc3545';
+  };
+
+  const getConfidenceText = (confidence) => {
+    if (confidence >= 80) return 'High Confidence';
+    if (confidence >= 60) return 'Medium Confidence';
+    return 'Low Confidence';
+  };
+
   return (
     <div className="card">
-      <h2>Dashboard</h2>
+      <h2>📊 Dashboard</h2>
       
+      {/* Main Stats Grid */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginTop: '1rem' }}>
         <div style={{ 
           background: 'linear-gradient(135deg, #ff6b9d, #c44569)', 
@@ -76,20 +89,94 @@ function Dashboard() {
         </div>
       </div>
 
+      {/* Enhanced Predictions Section */}
       <div style={{ marginTop: '2rem' }}>
-        <h3 style={{ color: '#c44569', marginBottom: '1rem' }}>Predictions</h3>
-        <div style={{ display: 'grid', gap: '0.5rem' }}>
-          <div>
-            <strong>Next Period:</strong> {formatDate(stats.nextPeriod)}
-          </div>
-          <div>
-            <strong>Fertility Window:</strong> {
-              stats.fertilityWindow.start && stats.fertilityWindow.end
-                ? `${formatDate(stats.fertilityWindow.start)} - ${formatDate(stats.fertilityWindow.end)}`
-                : 'Not calculated yet'
-            }
+        <h3 style={{ color: '#c44569', marginBottom: '1rem' }}>🔮 Smart Predictions</h3>
+        
+        <div style={{ 
+          background: 'linear-gradient(135deg, #f8f9fa, #e9ecef)',
+          padding: '1.5rem',
+          borderRadius: '12px',
+          marginBottom: '1rem'
+        }}>
+          <div style={{ display: 'grid', gap: '1rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div>
+                <strong>Next Period:</strong> {formatDate(stats.nextPeriod)}
+              </div>
+              {predictions.confidence && (
+                <div style={{
+                  background: getConfidenceColor(predictions.confidence.nextPeriod),
+                  color: 'white',
+                  padding: '0.25rem 0.75rem',
+                  borderRadius: '12px',
+                  fontSize: '0.8rem',
+                  fontWeight: 'bold'
+                }}>
+                  {predictions.confidence.nextPeriod}% {getConfidenceText(predictions.confidence.nextPeriod)}
+                </div>
+              )}
+            </div>
+            
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div>
+                <strong>Fertility Window:</strong> {
+                  stats.fertilityWindow.start && stats.fertilityWindow.end
+                    ? `${formatDate(stats.fertilityWindow.start)} - ${formatDate(stats.fertilityWindow.end)}`
+                    : 'Not calculated yet'
+                }
+              </div>
+              {predictions.confidence && (
+                <div style={{
+                  background: getConfidenceColor(predictions.confidence.ovulation),
+                  color: 'white',
+                  padding: '0.25rem 0.75rem',
+                  borderRadius: '12px',
+                  fontSize: '0.8rem',
+                  fontWeight: 'bold'
+                }}>
+                  {predictions.confidence.ovulation}% {getConfidenceText(predictions.confidence.ovulation)}
+                </div>
+              )}
+            </div>
+            
+            {predictions.accuracy !== null && (
+              <div style={{ 
+                background: '#e3f2fd',
+                padding: '1rem',
+                borderRadius: '8px',
+                fontSize: '0.9rem'
+              }}>
+                <strong>📈 Historical Accuracy:</strong> {predictions.accuracy}% 
+                <span style={{ color: '#666', marginLeft: '0.5rem' }}>
+                  (based on past {cycles.length - 2} predictions)
+                </span>
+              </div>
+            )}
+            
+            {predictions.cycleLengthVariance !== undefined && cycles.length > 2 && (
+              <div style={{ fontSize: '0.9rem', color: '#666' }}>
+                <strong>Cycle Consistency:</strong> ±{predictions.cycleLengthVariance} days variation
+                {predictions.cycleLengthVariance <= 3 && <span style={{ color: '#28a745' }}> (Very Regular)</span>}
+                {predictions.cycleLengthVariance > 3 && predictions.cycleLengthVariance <= 7 && <span style={{ color: '#ffc107' }}> (Regular)</span>}
+                {predictions.cycleLengthVariance > 7 && <span style={{ color: '#dc3545' }}> (Variable)</span>}
+              </div>
+            )}
           </div>
         </div>
+        
+        {cycles.length < 3 && (
+          <div style={{
+            background: '#fff3cd',
+            border: '1px solid #ffeaa7',
+            borderRadius: '8px',
+            padding: '1rem',
+            fontSize: '0.9rem',
+            color: '#856404'
+          }}>
+            <strong>💡 Tip:</strong> Track at least 3 cycles for more accurate predictions and confidence scoring!
+          </div>
+        )}
       </div>
     </div>
   );

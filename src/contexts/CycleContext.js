@@ -10,7 +10,8 @@ const initialState = {
     ovulation: null,
     fertilityWindow: { start: null, end: null }
   },
-  symptoms: []
+  symptoms: [],
+  medications: []
 };
 
 function cycleReducer(state, action) {
@@ -36,6 +37,28 @@ function cycleReducer(state, action) {
       return {
         ...state,
         symptoms: [...state.symptoms, action.payload]
+      };
+    
+    case 'ADD_MEDICATION':
+      return {
+        ...state,
+        medications: [...state.medications, action.payload]
+      };
+    
+    case 'TOGGLE_MEDICATION':
+      return {
+        ...state,
+        medications: state.medications.map(med => 
+          med.id === action.payload.id 
+            ? { ...med, isActive: !med.isActive }
+            : med
+        )
+      };
+    
+    case 'DELETE_MEDICATION':
+      return {
+        ...state,
+        medications: state.medications.filter(med => med.id !== action.payload.id)
       };
     
     default:

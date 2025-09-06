@@ -3,39 +3,68 @@ export function calculatePredictions(cycles) {
     return {
       nextPeriod: null,
       ovulation: null,
-      fertilityWindow: { start: null, end: null }
+      fertilityWindow: { start: null, end: null },
+      confidence: { nextPeriod: 0, ovulation: 0 },
+      accuracy: null
     };
   }
 
-  const completedCycles = cycles.filter(cycle => cycle.endDate);
+  // Calculate cycle intervals (time between periods)
+  const cycleIntervals = [];
+  for (let i = 1; i < cycles.length; i++) {
+    const currentStart = new Date(cycles[i].startDate);
+    const previousStart = new Date(cycles[i - 1].startDate);
+    const interval = Math.ceil((currentStart - previousStart) / (1000 * 60 * 60 * 24));
+    cycleIntervals.push(interval);
+  }
+
   let averageCycleLength = 28;
-  
-  if (completedCycles.length > 0) {
-    const cycleLengths = completedCycles.map(cycle => {
-      const start = new Date(cycle.startDate);
-      const end = new Date(cycle.endDate);
-      return Math.ceil((end - start) / (1000 * 60 * 60 * 24)) + 1;
-    });
+  let cycleLengthVariance = 0;
+  let confidence = { nextPeriod: 30, ovulation: 20 }; // Base confidence
+
+  if (cycleIntervals.length > 0) {
+    // Use weighted average giving more weight to recent cycles
+    const weights = cycleIntervals.map((_, index) => Math.pow(1.2, index));
+    const weightedSum = cycleIntervals.reduce((sum, length, index) => sum + length * weights[index], 0);
+    const totalWeight = weights.reduce((sum, weight) => sum + weight, 0);
+    averageCycleLength = Math.round(weightedSum / totalWeight);
+
+    // Calculate variance for confidence scoring
+    const variance = cycleIntervals.reduce((sum, length) => {
+      return sum + Math.pow(length - averageCycleLength, 2);
+    }, 0) / cycleIntervals.length;
+    cycleLengthVariance = Math.sqrt(variance);
+
+    // Improve confidence based on data quality
+    const cycleCount = cycleIntervals.length;
+    const consistencyBonus = Math.max(0, 50 - cycleLengthVariance * 5);
+    const dataVolumeBonus = Math.min(40, cycleCount * 8);
     
-    averageCycleLength = Math.round(
-      cycleLengths.reduce((sum, length) => sum + length, 0) / cycleLengths.length
-    );
+    confidence.nextPeriod = Math.min(95, 30 + consistencyBonus + dataVolumeBonus);
+    confidence.ovulation = Math.min(90, confidence.nextPeriod - 10);
   }
 
   const lastCycle = cycles[cycles.length - 1];
   const lastPeriodStart = new Date(lastCycle.startDate);
 
+  // Enhanced prediction with confidence intervals
   const nextPeriodDate = new Date(lastPeriodStart);
   nextPeriodDate.setDate(lastPeriodStart.getDate() + averageCycleLength);
 
+  // Adjust ovulation prediction based on cycle length patterns
+  const lutealPhaseLength = averageCycleLength > 35 ? 16 : averageCycleLength < 21 ? 12 : 14;
   const ovulationDate = new Date(nextPeriodDate);
-  ovulationDate.setDate(nextPeriodDate.getDate() - 14);
+  ovulationDate.setDate(nextPeriodDate.getDate() - lutealPhaseLength);
 
+  // Fertility window calculation with better precision
   const fertilityStart = new Date(ovulationDate);
   fertilityStart.setDate(ovulationDate.getDate() - 5);
   
   const fertilityEnd = new Date(ovulationDate);
-  fertilityEnd.setDate(ovulationDate.getDate() + 1);
+  fertilityEnd.setDate(ovulationDate.getDate() + 2);
+
+  // Calculate historical accuracy if we have enough data
+  const accuracy = calculateHistoricalAccuracy(cycles);
 
   return {
     nextPeriod: nextPeriodDate.toISOString(),
@@ -44,8 +73,42 @@ export function calculatePredictions(cycles) {
       start: fertilityStart.toISOString(),
       end: fertilityEnd.toISOString()
     },
-    averageCycleLength
+    averageCycleLength,
+    cycleLengthVariance: Math.round(cycleLengthVariance * 10) / 10,
+    confidence,
+    accuracy,
+    predictionRange: {
+      earliest: new Date(nextPeriodDate.getTime() - cycleLengthVariance * 24 * 60 * 60 * 1000).toISOString(),
+      latest: new Date(nextPeriodDate.getTime() + cycleLengthVariance * 24 * 60 * 60 * 1000).toISOString()
+    }
   };
+}
+
+function calculateHistoricalAccuracy(cycles) {
+  if (cycles.length < 3) return null;
+
+  let correctPredictions = 0;
+  let totalPredictions = 0;
+
+  // Test predictions against actual data for cycles 3 onwards
+  for (let i = 2; i < cycles.length; i++) {
+    const historicalCycles = cycles.slice(0, i);
+    const predictions = calculatePredictions(historicalCycles);
+    const actualNextCycle = cycles[i];
+
+    if (predictions.nextPeriod) {
+      const predictedDate = new Date(predictions.nextPeriod);
+      const actualDate = new Date(actualNextCycle.startDate);
+      const differenceInDays = Math.abs((actualDate - predictedDate) / (1000 * 60 * 60 * 24));
+
+      if (differenceInDays <= 2) {
+        correctPredictions++;
+      }
+      totalPredictions++;
+    }
+  }
+
+  return totalPredictions > 0 ? Math.round((correctPredictions / totalPredictions) * 100) : null;
 }
 
 export function calculateCycleDay(cycles, date) {

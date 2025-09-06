@@ -5,6 +5,68 @@ All notable changes to Lunation will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.0] - 2025-09-06
+
+### 🚀 Major Phase 2 Release - Enhanced Analytics & Intelligence
+
+### Added
+- **📈 Advanced Analytics Dashboard** with interactive charts and visualizations
+  - Cycle length trends with Line charts
+  - Symptom frequency analysis with Bar charts  
+  - Flow intensity distribution with Doughnut charts
+  - Comprehensive cycle insights and patterns
+- **💊 Medication & Supplement Tracking**
+  - Track birth control, pain relief, hormones, supplements
+  - Medication scheduling and dosage management
+  - Active/inactive medication status
+  - Medication insights and effects analysis
+- **📤 Data Export Functionality**
+  - Export to CSV format for spreadsheet analysis
+  - Export to JSON format with complete data backup
+  - Data preview before export
+  - Privacy-focused local file generation
+- **🔮 Enhanced Prediction Algorithm**
+  - Weighted averaging giving more importance to recent cycles
+  - Confidence scoring for predictions (High/Medium/Low)
+  - Historical accuracy tracking and reporting
+  - Cycle consistency analysis with variance calculations
+  - Improved ovulation prediction with adaptive luteal phase
+- **🎯 Smart Navigation System**
+  - Tabbed interface for better organization
+  - Mobile-responsive navigation with icon-only view
+  - Sticky navigation for easy access
+- **📊 Advanced Dashboard Features**
+  - Confidence badges for predictions
+  - Historical accuracy display
+  - Cycle consistency indicators
+  - Enhanced prediction ranges
+
+### Improved
+- **Algorithm Intelligence**: Machine learning concepts applied to cycle prediction
+- **User Experience**: Professional tabbed navigation with mobile optimization
+- **Data Visualization**: Chart.js integration for rich visual analytics
+- **Prediction Accuracy**: Enhanced algorithms with confidence scoring
+- **Mobile Support**: Better responsive design and touch interactions
+
+### Technical Enhancements
+- Added Chart.js and react-chartjs-2 for data visualization
+- Enhanced context management for medications
+- Improved state management with additional reducers
+- Better error handling and user feedback
+- Optimized performance for larger datasets
+
+### Dependencies Added
+- `chart.js: ^4.5.0` - Charting library for analytics
+- `react-chartjs-2: ^5.3.0` - React wrapper for Chart.js
+
+### Known Improvements
+- Prediction accuracy now improves significantly with more data
+- Analytics require minimum 2 cycles for meaningful insights
+- Export functionality handles edge cases gracefully
+- Medication tracking integrates with cycle analysis
+
+---
+
 ## [0.1.0-beta] - 2025-09-06
 
 ### Added
