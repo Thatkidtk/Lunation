@@ -1,0 +1,102 @@
+# Lunation - Menstrual Cycle Tracking Application
+
+## Project Overview
+
+**Mission Statement**: Develop a comprehensive period-tracking application that provides accurate menstrual cycle predictions, ovulation tracking, and fertility insights to empower women with personalized reproductive health data.
+
+## 1. Goals & Outcomes
+
+### Problem Statement
+Create an intelligent menstrual cycle tracking tool that provides accurate predictions for periods, ovulation cycles, and fertility windows while offering personalized health insights.
+
+### Primary Beneficiary
+Women of reproductive age seeking to understand and track their menstrual cycles for health, planning, or fertility purposes.
+
+### Value Proposition
+- **Personalized Insights**: Data-driven analysis of individual cycle patterns
+- **Accurate Predictions**: High-precision forecasting of menstrual cycles and ovulation
+- **Fertility Awareness**: Enhanced understanding of fertile windows and reproductive health
+- **Time Efficiency**: Streamlined tracking with minimal daily input required
+
+### Success Metrics (2-4 week targets)
+- **User Engagement**: 100+ active daily users
+- **Prediction Accuracy**: 85%+ accuracy rate for cycle predictions
+- **User Retention**: 70%+ weekly retention rate
+- **Time Savings**: Average 2-3 minutes daily for comprehensive cycle tracking
+
+## 2. Target Users & Context
+
+### Primary User Persona
+- **Demographics**: Women aged 18-45
+- **Environment**: Multi-platform users (Mac, iPhone, Web)
+- **Usage Patterns**: Daily symptom logging, weekly cycle review
+- **Pain Points**: 
+  - Inconsistent cycle tracking methods
+  - Lack of predictive insights
+  - Complex interfaces requiring extensive daily input
+
+### Platform Strategy
+**Priority 1**: Web application (React-based)
+**Priority 2**: Mobile-responsive design for iPhone compatibility
+**Future Consideration**: Native iOS application
+
+### Accessibility Requirements
+- High color contrast for readability
+- Intuitive navigation with minimal taps
+- Scalable text sizing
+- Touch-friendly interface design
+
+## 3. Core Jobs To Be Done (JTBD)
+
+### Primary Use Cases
+
+#### Cycle Prediction
+**Job**: "When I want to plan my month ahead, I need to know when my next period will start so I can prepare accordingly."
+- **Success Criteria**: Predictions accurate within 1-2 days
+- **Frequency**: Monthly planning sessions
+- **Urgency**: High importance for life planning
+
+#### Ovulation Tracking
+**Job**: "When I'm trying to understand my fertility, I want to know my ovulation window so I can make informed decisions about conception or contraception."
+- **Success Criteria**: Fertile window identified with 90%+ accuracy
+- **Frequency**: Daily during fertile periods, weekly otherwise
+- **Urgency**: Critical for family planning decisions
+
+#### Health Monitoring
+**Job**: "When I experience symptoms or irregularities, I want to track patterns so I can discuss them with my healthcare provider."
+- **Success Criteria**: Comprehensive symptom history with trend analysis
+- **Frequency**: As needed, typically 2-3 times per week
+- **Urgency**: Important for long-term health management
+
+## 4. Technical Specifications
+
+### Core Features
+- **Cycle Calendar**: Visual representation of menstrual cycles
+- **Symptom Tracking**: Mood, physical symptoms, flow intensity
+- **Prediction Engine**: Machine learning-based cycle forecasting
+- **Data Visualization**: Trends, patterns, and insights dashboard
+- **Export Functionality**: Data sharing with healthcare providers
+
+### Technology Stack
+- **Frontend**: React.js with modern hooks and context API
+- **Styling**: CSS-in-JS or Tailwind CSS for responsive design
+- **State Management**: React Context + useReducer
+- **Data Persistence**: Local storage with cloud backup capability
+- **Charts/Graphs**: Chart.js or D3.js for data visualization
+
+## 5. Development Phases
+
+### Phase 1: MVP (Weeks 1-2)
+- Basic cycle input and tracking
+- Simple prediction algorithm
+- Calendar view interface
+
+### Phase 2: Enhanced Features (Weeks 3-4)
+- Symptom tracking capabilities
+- Data visualization dashboard
+- Improved prediction accuracy
+
+### Phase 3: Advanced Features (Future)
+- Export functionality
+- Healthcare provider sharing
+- Advanced analytics and insights
