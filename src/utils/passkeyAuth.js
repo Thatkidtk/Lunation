@@ -8,18 +8,29 @@ export class PasskeyAuth {
 
   // Check if WebAuthn/Passkeys are supported
   checkSupport() {
-    return !!(
-      window.PublicKeyCredential &&
-      window.navigator.credentials &&
-      typeof window.navigator.credentials.create === 'function' &&
-      typeof window.navigator.credentials.get === 'function'
-    );
+    try {
+      return !!(
+        typeof window !== 'undefined' &&
+        window.PublicKeyCredential &&
+        window.navigator &&
+        window.navigator.credentials &&
+        typeof window.navigator.credentials.create === 'function' &&
+        typeof window.navigator.credentials.get === 'function'
+      );
+    } catch (_) {
+      return false;
+    }
   }
 
   // Generate a random challenge for authentication
   generateChallenge() {
     const array = new Uint8Array(32);
-    crypto.getRandomValues(array);
+    if (typeof crypto !== 'undefined' && crypto.getRandomValues) {
+      crypto.getRandomValues(array);
+      return array;
+    }
+    // very weak fallback, only for environments without crypto (should not be used in prod)
+    for (let i = 0; i < array.length; i++) array[i] = Math.floor(Math.random() * 256);
     return array;
   }
 
@@ -224,4 +235,13 @@ export class PasskeyAuth {
 }
 
 // Export singleton instance
-export const passkeyAuth = new PasskeyAuth();
+export const passkeyAuth = typeof window !== 'undefined' ? new PasskeyAuth() : {
+  isSupported: false,
+  async register() { throw new Error('Passkeys are not supported in this environment'); },
+  async authenticate() { throw new Error('Passkeys are not supported in this environment'); },
+  isAuthenticated() { return false; },
+  getCurrentUser() { return null; },
+  signOut() { return { success: true }; },
+  deleteAccount() { return { success: true }; },
+  getAuthStats() { return null; },
+};

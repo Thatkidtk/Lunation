@@ -15,13 +15,27 @@ let pushFn;
 
 export function ToastHost() {
   const [items, setItems] = useState(/** @type {ToastItem[]} */([]));
+  const [target, setTarget] = useState(null);
 
   useEffect(() => {
     pushFn = (t) => setItems((xs) => [...xs, t]);
     return () => { pushFn = undefined; };
   }, []);
 
+  // Ensure we only portal once document.body exists (production builds load script in <head>)
+  useEffect(() => {
+    if (typeof document !== 'undefined' && document.body) {
+      setTarget(document.body);
+    } else {
+      const onReady = () => setTarget(document.body);
+      window.addEventListener('DOMContentLoaded', onReady, { once: true });
+      return () => window.removeEventListener('DOMContentLoaded', onReady);
+    }
+  }, []);
+
   const remove = (id) => setItems((xs) => xs.filter((x) => x.id !== id));
+
+  if (!target) return null;
 
   return createPortal(
     <div className="toast-host" aria-live="polite" aria-atomic="true">
@@ -29,7 +43,7 @@ export function ToastHost() {
         <ToastView key={t.id} item={t} onClose={() => remove(t.id)} />
       ))}
     </div>,
-    document.body
+    target
   );
 }
 
@@ -68,17 +82,16 @@ function ToastView({ item, onClose }) {
 
 export const toast = {
   /** @param {string} msg */
-  success: (msg) => pushFn?.({ id: crypto.randomUUID(), type: 'success', msg }),
+  success: (msg) => pushFn?.({ id: (typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : `t-${Date.now().toString(36)}-${Math.random().toString(36).slice(2,8)}`), type: 'success', msg }),
   /** @param {string} msg */
-  error: (msg) => pushFn?.({ id: crypto.randomUUID(), type: 'error', msg }),
+  error: (msg) => pushFn?.({ id: (typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : `t-${Date.now().toString(36)}-${Math.random().toString(36).slice(2,8)}`), type: 'error', msg }),
   /** @param {string} msg */
-  info: (msg) => pushFn?.({ id: crypto.randomUUID(), type: 'info', msg }),
+  info: (msg) => pushFn?.({ id: (typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : `t-${Date.now().toString(36)}-${Math.random().toString(36).slice(2,8)}`), type: 'info', msg }),
   /**
    * Info toast with action and custom duration
    * @param {string} msg
    * @param {number} duration
    * @param {{label: string, onClick: () => void}} action
    */
-  infoAction: (msg, duration, action) => pushFn?.({ id: crypto.randomUUID(), type: 'info', msg, duration, action }),
+  infoAction: (msg, duration, action) => pushFn?.({ id: (typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : `t-${Date.now().toString(36)}-${Math.random().toString(36).slice(2,8)}`), type: 'info', msg, duration, action }),
 };
-
