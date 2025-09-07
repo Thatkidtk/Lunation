@@ -1,5 +1,7 @@
-# Map AI co-author to repository owner to avoid showing as separate contributor
+# Unify contributor identities for GitHub's contributors graph
+Thomas Black <158193478+Thatkidtk@users.noreply.github.com> Thomas Kase Black <thomaskaseblack@thomass-mini.lan>
+
+# Historical: map any stray Claude co-author aliases to owner (defensive)
 Thomas Black <158193478+Thatkidtk@users.noreply.github.com> Claude <noreply@anthropic.com>
 Thomas Black <158193478+Thatkidtk@users.noreply.github.com> Claude Code <noreply@anthropic.com>
 Thomas Black <158193478+Thatkidtk@users.noreply.github.com> Claude <claude@noreply.anthropic.com>
-
