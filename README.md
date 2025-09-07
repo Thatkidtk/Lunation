@@ -178,6 +178,11 @@ npm run build      # Build production bundle (dist/)
 npm run preview    # Preview the production build locally
 ```
 
+### Environment Variables
+
+- `VITE_SENTRY_DSN` (optional): Sentry DSN to enable browser crash reporting.
+- `VITE_APP_VERSION` (optional): Release version tag. Defaults to package.json version at build.
+
 ### Deployment (GitHub Pages)
 - Deploys automatically on push to `main` via GitHub Actions.
 - Live site: https://thatkidtk.github.io/Lunation/
