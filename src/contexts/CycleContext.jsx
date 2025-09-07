@@ -130,6 +130,25 @@ export function CycleProvider({ children }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state, encryption.enabled, encryption.locked, encryption.passphrase]);
 
+  // Debounced periodic flush and on visibility change
+  useEffect(() => {
+    let intervalId;
+    const flush = () => {
+      const payload = { ...state, _version: SCHEMA_VERSION };
+      if (!encryption.enabled) {
+        safeLocalStorageSet(STORAGE_KEY, payload);
+      }
+    };
+    // periodic every 15s
+    intervalId = window.setInterval(flush, 15000);
+    const onVis = () => { if (document.hidden) flush(); };
+    document.addEventListener('visibilitychange', onVis);
+    return () => {
+      if (intervalId) window.clearInterval(intervalId);
+      document.removeEventListener('visibilitychange', onVis);
+    };
+  }, [state, encryption.enabled]);
+
   // Controls for encryption
   const unlock = async (passphrase) => {
     const saved = localStorage.getItem(STORAGE_KEY);
