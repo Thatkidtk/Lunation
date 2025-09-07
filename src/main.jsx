@@ -42,7 +42,9 @@ if (typeof window !== 'undefined') {
     const key = 'lunation:user_id';
     let uid = localStorage.getItem(key);
     if (!uid) { uid = crypto.randomUUID(); localStorage.setItem(key, uid); }
-    Sentry.setUser({ id: uid });
+    const testerCode = localStorage.getItem('lunation:tester_code') || undefined;
+    Sentry.setUser({ id: uid, username: testerCode });
+    if (testerCode) Sentry.setTag('tester_code', testerCode);
     Sentry.setContext('client', {
       userAgent: navigator.userAgent,
       platform: navigator.platform || 'web',

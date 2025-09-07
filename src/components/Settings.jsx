@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import { useCycle } from '../contexts/CycleContext';
 import { passkeyAuth } from '../utils/passkeyAuth';
 import AuthModal from './AuthModal';
+import * as Sentry from '@sentry/react';
+import { toast } from '../ui/Toast';
+import { ariaAnnounce } from '../ui/aria/LiveRegion';
 
 function Settings() {
   const { encryption, unlock, enableEncryption, disableEncryption, changePassphrase } = useCycle();
@@ -13,6 +16,15 @@ function Settings() {
   const [error, setError] = useState('');
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [currentUser, setCurrentUser] = useState(() => passkeyAuth.getCurrentUser());
+  const [testerCode, setTesterCode] = useState(() => {
+    try { return localStorage.getItem('lunation:tester_code') || ''; } catch (_) { return ''; }
+  });
+  const [forceCrash, setForceCrash] = useState(false);
+
+  if (forceCrash) {
+    // Force a render-time error so ErrorBoundary captures it
+    throw new Error('Test crash triggered from Settings');
+  }
 
   const handleEnable = async (e) => {
     e.preventDefault();
@@ -89,6 +101,25 @@ function Settings() {
     setCurrentUser(null);
   };
 
+  const saveTesterCode = () => {
+    try {
+      localStorage.setItem('lunation:tester_code', testerCode.trim());
+      const uid = localStorage.getItem('lunation:user_id') || undefined;
+      Sentry.setUser({ id: uid, username: testerCode.trim() || undefined });
+      if (testerCode.trim()) Sentry.setTag('tester_code', testerCode.trim());
+      toast.success('Tester code saved');
+      ariaAnnounce('Tester code saved');
+    } catch (_) {
+      // best-effort
+    }
+  };
+
+  const sendTestEvent = () => {
+    Sentry.captureMessage('tester.send_test_event', { level: 'info' });
+    toast.info('Test event sent');
+    ariaAnnounce('Test event sent');
+  };
+
   return (
     <div className="card">
       <h2>⚙️ Settings</h2>
@@ -100,6 +131,30 @@ function Settings() {
       )}
 
       <div style={{ display: 'grid', gap: '1.5rem' }}>
+        {/* Testing & Diagnostics */}
+        <div style={{ background: 'linear-gradient(135deg, var(--surface-2), var(--surface))', padding: '1.5rem', borderRadius: 12, border: '1px solid var(--border)' }}>
+          <h3 style={{ color: 'var(--accent)', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            🧪 Testing & Diagnostics
+          </h3>
+          <div style={{ display: 'grid', gap: '0.75rem', maxWidth: 420 }}>
+            <label style={{ fontWeight: 600 }}>Tester Code (optional)</label>
+            <input
+              type="text"
+              value={testerCode}
+              onChange={(e) => setTesterCode(e.target.value)}
+              placeholder="e.g. QA-001, Alice, Device-3"
+              style={{ padding: '0.6rem', borderRadius: 8, border: '1px solid #ddd' }}
+            />
+            <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+              <button className="btn" type="button" onClick={saveTesterCode}>Save Tester Code</button>
+              <button className="btn btn-secondary" type="button" onClick={sendTestEvent}>Send Test Event</button>
+              <button className="btn btn-secondary" type="button" onClick={() => setForceCrash(true)} style={{ background: 'var(--danger)', borderColor: 'var(--danger)' }}>Crash App (test)</button>
+            </div>
+            <div style={{ fontSize: '0.9rem', color: 'var(--muted)' }}>
+              Saved code is attached to error reports to identify your device/tester.
+            </div>
+          </div>
+        </div>
         {/* Account Authentication */}
         <div style={{ 
           background: 'linear-gradient(135deg, var(--surface-2), var(--surface))', 
