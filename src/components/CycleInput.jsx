@@ -3,6 +3,7 @@ import { useCycle } from '../contexts/CycleContext';
 import { calculatePredictions } from '../utils/cycleCalculations';
 import { toast } from '../ui/Toast';
 import { ariaAnnounce } from '../ui/aria/LiveRegion';
+import * as Sentry from '@sentry/react';
 
 function CycleInput() {
   const { state, dispatch } = useCycle();
@@ -73,6 +74,7 @@ function CycleInput() {
     };
 
     dispatch({ type: 'ADD_CYCLE', payload: newCycle });
+    try { Sentry.addBreadcrumb({ category: 'cycle', message: 'add', level: 'info', data: { startDate: formData.startDate, endDate: formData.endDate || null, flow: formData.flowIntensity } }); } catch (_) {}
 
     const updatedCycles = [...state.cycles, newCycle];
     const predictions = calculatePredictions(updatedCycles);

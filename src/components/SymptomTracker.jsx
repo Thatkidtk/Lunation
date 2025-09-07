@@ -3,6 +3,7 @@ import { useCycle } from '../contexts/CycleContext';
 import { createAnalysisEngine } from '../utils/aiPredictions';
 import { toast } from '../ui/Toast';
 import { ariaAnnounce } from '../ui/aria/LiveRegion';
+import * as Sentry from '@sentry/react';
 
 function SymptomTracker() {
   const { state, dispatch } = useCycle();
@@ -129,6 +130,7 @@ function SymptomTracker() {
       payload: { ...state, symptoms: allSymptoms }
     });
 
+    try { Sentry.addBreadcrumb({ category: 'symptoms', message: 'save', level: 'info', data: { date: selectedDate, count: newSymptoms.length } }); } catch (_) {}
     // Feedback
     toast.success('Symptoms saved');
     ariaAnnounce('Symptoms saved');

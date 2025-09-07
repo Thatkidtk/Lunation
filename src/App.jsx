@@ -15,6 +15,7 @@ import SmartNotifications from './components/SmartNotifications';
 import SymptomTracker from './components/SymptomTracker';
 import ResearchHub from './components/ResearchHub';
 import Settings from './components/Settings';
+import * as Sentry from '@sentry/react';
 
 function App() {
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -121,7 +122,10 @@ function App() {
               {tabs.map(tab => (
                 <button
                   key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
+                  onClick={() => { 
+                    try { Sentry.addBreadcrumb({ category: 'nav', message: 'tab-change', level: 'info', data: { to: tab.id } }); } catch (_) {}
+                    setActiveTab(tab.id);
+                  }}
                   style={{
                     background: 'none',
                     border: 'none',

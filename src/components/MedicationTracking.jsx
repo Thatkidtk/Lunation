@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useCycle } from '../contexts/CycleContext';
 import { toast } from '../ui/Toast';
 import { ariaAnnounce } from '../ui/aria/LiveRegion';
+import * as Sentry from '@sentry/react';
 
 function MedicationTracking() {
   const { state, dispatch } = useCycle();
@@ -59,6 +60,7 @@ function MedicationTracking() {
     };
 
     dispatch({ type: 'ADD_MEDICATION', payload: newMedication });
+    try { Sentry.addBreadcrumb({ category: 'medication', message: 'add', level: 'info', data: { name: newMedication.name, type: newMedication.type } }); } catch (_) {}
     setNewId(newMedication.id);
 
     // Feedback
@@ -87,6 +89,7 @@ function MedicationTracking() {
   const deleteMedication = (medication) => {
     // Immediate UI removal
     dispatch({ type: 'DELETE_MEDICATION', payload: { id: medication.id } });
+    try { Sentry.addBreadcrumb({ category: 'medication', message: 'delete', level: 'info', data: { id: medication.id, name: medication.name } }); } catch (_) {}
     // Undo pattern via toast action (6s)
     toast.infoAction(`Deleted “${medication.name}”`, 6000, {
       label: 'Undo',
