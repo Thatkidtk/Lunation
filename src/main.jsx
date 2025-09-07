@@ -29,6 +29,25 @@ if (typeof window !== 'undefined') {
   window.addEventListener('unhandledrejection', (event) => {
     Sentry.captureException(event.reason ?? new Error('Unhandled rejection'));
   });
+  // Capture uncaught errors as well
+  window.addEventListener('error', (event) => {
+    // Avoid double-reporting react boundary errors by checking for Event.error
+    if (event?.message) {
+      Sentry.captureException(event.error || new Error(String(event.message)));
+    }
+  });
+
+  // Tag anonymous tester/user to correlate reports
+  try {
+    const key = 'lunation:user_id';
+    let uid = localStorage.getItem(key);
+    if (!uid) { uid = crypto.randomUUID(); localStorage.setItem(key, uid); }
+    Sentry.setUser({ id: uid });
+    Sentry.setContext('client', {
+      userAgent: navigator.userAgent,
+      platform: navigator.platform || 'web',
+    });
+  } catch (_) {}
 }
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
