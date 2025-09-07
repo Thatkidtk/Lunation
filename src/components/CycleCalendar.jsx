@@ -152,6 +152,66 @@ function CycleCalendar() {
         {renderCalendar()}
       </div>
 
+      {/* Prediction probability micro-chart */}
+      {predictions && Array.isArray(predictions.probabilityCurve) && predictions.probabilityCurve.length > 0 && (
+        <div style={{ marginTop: '1.5rem' }}>
+          <h4 style={{ color: 'var(--accent)', marginBottom: '0.75rem' }}>Prediction Confidence</h4>
+          <div
+            role="img"
+            aria-label="Probability distribution for next period date"
+            style={{
+              display: 'flex',
+              alignItems: 'flex-end',
+              gap: '6px',
+              height: '96px',
+              padding: '8px 10px',
+              border: '1px solid var(--border)',
+              borderRadius: '10px',
+              background: 'var(--surface)'
+            }}
+          >
+            {(() => {
+              const curve = predictions.probabilityCurve
+                .slice()
+                .sort((a, b) => new Date(a.date) - new Date(b.date));
+              const maxP = Math.max(...curve.map(c => c.probability || 0), 0.001);
+              return curve.map((c, idx) => {
+                const p = (c.probability || 0) / maxP; // normalize to tallest bar
+                const h = Math.max(12, Math.round(p * 88));
+                const isCenter = idx === Math.floor(curve.length / 2);
+                const label = `${new Date(c.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}: ${(c.probability * 100).toFixed(1)}%`;
+                return (
+                  <div key={c.date} style={{ textAlign: 'center' }}>
+                    <div
+                      title={label}
+                      aria-label={label}
+                      style={{
+                        width: '14px',
+                        height: `${h}px`,
+                        background: isCenter ? 'linear-gradient(180deg, var(--accent), #3a2e8f)' : 'linear-gradient(180deg, #5e4bd8, #2b275a)',
+                        borderRadius: '6px',
+                        border: isCenter ? '1px solid var(--border-accent)' : '1px solid var(--border)'
+                      }}
+                    />
+                    <div style={{ fontSize: '0.7rem', color: 'var(--muted)', marginTop: '4px' }}>
+                      {isCenter ? '0' : (idx - Math.floor(curve.length / 2))}
+                    </div>
+                  </div>
+                );
+              });
+            })()}
+          </div>
+          <div style={{ marginTop: '0.5rem', display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem', fontSize: '0.9rem', color: 'var(--muted)' }}>
+            <div>
+              Confidence: {predictions.confidence?.nextPeriod ?? 0}% · Variation: ±{predictions.cycleLengthVariance ?? 0} days
+            </div>
+            <div>
+              Tip: Taller bar = higher chance; 0 marks the predicted start.
+            </div>
+          </div>
+        </div>
+      )}
+
       <div style={{ marginTop: '2rem' }}>
         <h4 style={{ color: 'var(--accent)', marginBottom: '1rem' }}>Legend</h4>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', fontSize: '0.875rem' }}>
