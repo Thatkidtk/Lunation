@@ -2,9 +2,12 @@
 
 A comprehensive, privacy-focused React web application for tracking menstrual cycles, predicting periods, and monitoring fertility windows.
 
-![Version](https://img.shields.io/badge/version-0.1.0--beta-orange)
 ![React](https://img.shields.io/badge/React-18.2.0-blue)
 ![Status](https://img.shields.io/badge/status-beta-yellow)
+[![CI](https://github.com/Thatkidtk/Lunation/actions/workflows/ci.yml/badge.svg)](https://github.com/Thatkidtk/Lunation/actions/workflows/ci.yml)
+[![Deploy](https://github.com/Thatkidtk/Lunation/actions/workflows/deploy.yml/badge.svg)](https://github.com/Thatkidtk/Lunation/actions/workflows/deploy.yml)
+
+Live: https://thatkidtk.github.io/Lunation/
 
 ## 🌟 Features
 
@@ -21,8 +24,8 @@ A comprehensive, privacy-focused React web application for tracking menstrual cy
 ## 🚀 Quick Start
 
 ### Prerequisites
-- Node.js (version 14 or higher)
-- npm or yarn package manager
+- Node.js 18+ (Node 20 used in CI)
+- npm package manager
 
 ### Installation & Setup
 
@@ -38,11 +41,11 @@ A comprehensive, privacy-focused React web application for tracking menstrual cy
 
 3. **Start the development server**
    ```bash
-   npm start
+   npm run dev
    ```
 
 4. **Open your browser**
-   - Navigate to [http://localhost:3000](http://localhost:3000)
+   - Navigate to the URL printed by Vite (typically http://localhost:5173)
    - The app will automatically reload when you make changes
 
 ## 📖 How to Use Lunation
@@ -139,37 +142,46 @@ Your data is stored using your browser's `localStorage` feature:
 ## 🛠 Technical Details
 
 ### Built With
-- **React 18**: Modern React with hooks and functional components
-- **Context API**: Global state management with useReducer
-- **CSS-in-JS**: Responsive styling with mobile-first approach
-- **date-fns**: Reliable date manipulation and formatting
-- **LocalStorage API**: Browser-native data persistence
+- **React 18 + Vite**: Fast dev server and modern bundling
+- **Context API**: Global state with useReducer
+- **Vitest + RTL**: Unit tests with jsdom
+- **date-fns**: Date math and formatting
+- **LocalStorage + Web Crypto**: Optional AES-GCM at-rest encryption
 
 ### Project Structure
 ```
 src/
-├── components/              # React components
-│   ├── Header.js           # App header and branding
-│   ├── Dashboard.js        # Statistics and predictions
-│   ├── CycleInput.js       # Data input form
-│   └── CycleCalendar.js    # Interactive calendar
-├── contexts/               # State management
-│   └── CycleContext.js     # Global app state
-├── utils/                  # Helper functions
-│   └── cycleCalculations.js # Prediction algorithms
-├── styles/                 # Styling
-│   └── index.css          # Global CSS
-├── App.js                 # Main application
-└── index.js               # React entry point
+├── components/              # React components (JSX)
+│   ├── Header.jsx           # App header (theme toggle)
+│   ├── Dashboard.jsx        # Stats and predictions
+│   ├── CycleInput.jsx       # Data input form
+│   ├── CycleCalendar.jsx    # Interactive calendar
+│   ├── Analytics.jsx        # Charts and insights
+│   ├── MedicationTracking.jsx
+│   └── DataExport.jsx
+├── contexts/
+│   └── CycleContext.jsx     # Global state + encryption controls
+├── utils/
+│   ├── cycleCalculations.js # Prediction algorithms
+│   └── security.js          # CSV sanitization + encryption helpers
+├── styles/
+│   └── index.css            # Lunar theme CSS variables
+├── main.jsx                 # React entry point
+└── App.jsx                  # App shell/tabs
 ```
 
 ### Available Commands
 ```bash
-npm start          # Start development server
-npm test           # Run test suite
-npm run build      # Build for production
-npm run eject      # Eject from Create React App (irreversible)
+npm run dev        # Start Vite dev server
+npm test           # Run tests (Vitest)
+npm run build      # Build production bundle (dist/)
+npm run preview    # Preview the production build locally
 ```
+
+### Deployment (GitHub Pages)
+- Deploys automatically on push to `main` via GitHub Actions.
+- Live site: https://thatkidtk.github.io/Lunation/
+- If you fork/rename, update `base` in `vite.config.js` to `/<your-repo>/`.
 
 ## 🐛 Troubleshooting
 

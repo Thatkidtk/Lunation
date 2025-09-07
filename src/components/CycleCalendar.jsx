@@ -68,15 +68,15 @@ function CycleCalendar() {
 
     switch (type) {
       case 'period-start':
-        return { ...baseStyle, backgroundColor: '#c44569', color: 'white', fontWeight: 'bold' };
+        return { ...baseStyle, backgroundColor: '#9158ff', color: 'white', fontWeight: 'bold' };
       case 'period':
-        return { ...baseStyle, backgroundColor: '#ff6b9d', color: 'white' };
+        return { ...baseStyle, backgroundColor: '#5e4bd8', color: 'white' };
       case 'predicted-period':
-        return { ...baseStyle, backgroundColor: '#ffb6c1', color: '#c44569', border: '2px dashed #c44569' };
+        return { ...baseStyle, backgroundColor: '#3a2e8f', color: '#e6e8ef', border: '2px dashed #9b8cff' };
       case 'fertile':
-        return { ...baseStyle, backgroundColor: '#a8e6cf', color: '#2d5a27' };
+        return { ...baseStyle, backgroundColor: '#2a7c7c', color: '#c7f2f2' };
       default:
-        return { ...baseStyle, ':hover': { backgroundColor: '#f0f0f0' } };
+        return { ...baseStyle };
     }
   };
 
@@ -128,7 +128,7 @@ function CycleCalendar() {
         <h2>Cycle Calendar</h2>
         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
           <button onClick={() => navigateMonth(-1)} className="btn btn-secondary">←</button>
-          <h3 style={{ margin: 0, color: '#c44569' }}>
+          <h3 style={{ margin: 0, color: 'var(--accent)' }}>
             {monthNames[currentMonth.getMonth()]} {currentMonth.getFullYear()}
           </h3>
           <button onClick={() => navigateMonth(1)} className="btn btn-secondary">→</button>
@@ -153,7 +153,7 @@ function CycleCalendar() {
       </div>
 
       <div style={{ marginTop: '2rem' }}>
-        <h4 style={{ color: '#c44569', marginBottom: '1rem' }}>Legend</h4>
+        <h4 style={{ color: 'var(--accent)', marginBottom: '1rem' }}>Legend</h4>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', fontSize: '0.875rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
             <div style={{ ...getDayStyle('period-start'), width: '20px', height: '20px', fontSize: '0.75rem' }}>●</div>

@@ -1,17 +1,24 @@
 import React from 'react';
 import { useCycle } from '../contexts/CycleContext';
+import { createAnalysisEngine } from '../utils/aiPredictions';
 
 function Dashboard() {
   const { state } = useCycle();
-  const { cycles, predictions } = state;
+  const { cycles, predictions, symptoms } = state;
+
+  // Use AI predictions if we have enough data
+  const analysisEngine = cycles.length >= 3 ? createAnalysisEngine(cycles, symptoms || []) : null;
+  const aiPredictions = analysisEngine ? analysisEngine.generateAdvancedPredictions() : null;
+  const healthScore = analysisEngine ? analysisEngine.patterns.healthScore : null;
 
   const stats = {
     totalCycles: cycles.length,
     averageLength: cycles.length > 0 
       ? Math.round(cycles.reduce((sum, cycle) => sum + (cycle.length || 28), 0) / cycles.length)
       : 28,
-    nextPeriod: predictions.nextPeriod,
-    fertilityWindow: predictions.fertilityWindow
+    nextPeriod: aiPredictions ? aiPredictions.nextPeriod.date : predictions.nextPeriod,
+    fertilityWindow: aiPredictions ? aiPredictions.fertilityWindow : predictions.fertilityWindow,
+    confidence: aiPredictions ? aiPredictions.confidence.score : null
   };
 
   const formatDate = (date) => {
@@ -46,12 +53,12 @@ function Dashboard() {
 
   return (
     <div className="card">
-      <h2>📊 Dashboard</h2>
+      <h2>Dashboard</h2>
       
-      {/* Main Stats Grid */}
+      {/* Main Stats Grid with AI Enhancement */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginTop: '1rem' }}>
         <div style={{ 
-          background: 'linear-gradient(135deg, #ff6b9d, #c44569)', 
+          background: 'linear-gradient(135deg, var(--accent), var(--accent-2))', 
           color: 'white', 
           padding: '1rem', 
           borderRadius: '8px',
@@ -59,21 +66,39 @@ function Dashboard() {
         }}>
           <h3 style={{ fontSize: '2rem', margin: '0' }}>{stats.totalCycles}</h3>
           <p style={{ opacity: '0.9', margin: '0.5rem 0 0 0' }}>Cycles Tracked</p>
+          {stats.confidence && (
+            <div style={{ fontSize: '0.8rem', opacity: '0.8', marginTop: '0.5rem' }}>
+              🤖 {stats.confidence}% AI Confidence
+            </div>
+          )}
         </div>
 
         <div style={{ 
-          background: 'linear-gradient(135deg, #a8e6cf, #7fcdcd)', 
+          background: healthScore ? 
+            `linear-gradient(135deg, ${healthScore.score >= 85 ? '#28a745, #20c997' : 
+                                     healthScore.score >= 70 ? '#20c997, #3aa6a6' : 
+                                     '#ffc107, #fd7e14'})` :
+            'linear-gradient(135deg, #3aa6a6, #5ce0ff)', 
           color: 'white', 
           padding: '1rem', 
           borderRadius: '8px',
           textAlign: 'center'
         }}>
-          <h3 style={{ fontSize: '2rem', margin: '0' }}>{stats.averageLength}</h3>
-          <p style={{ opacity: '0.9', margin: '0.5rem 0 0 0' }}>Average Cycle Length</p>
+          <h3 style={{ fontSize: '2rem', margin: '0' }}>
+            {healthScore ? healthScore.score : stats.averageLength}
+          </h3>
+          <p style={{ opacity: '0.9', margin: '0.5rem 0 0 0' }}>
+            {healthScore ? 'Health Score' : 'Average Cycle Length'}
+          </p>
+          {healthScore && (
+            <div style={{ fontSize: '0.8rem', opacity: '0.8', marginTop: '0.5rem', textTransform: 'capitalize' }}>
+              {healthScore.category.replace('-', ' ')}
+            </div>
+          )}
         </div>
 
         <div style={{ 
-          background: 'linear-gradient(135deg, #ffd93d, #ff9068)', 
+          background: 'linear-gradient(135deg, #9158ff, #3a2e8f)', 
           color: 'white', 
           padding: '1rem', 
           borderRadius: '8px',
@@ -81,24 +106,56 @@ function Dashboard() {
         }}>
           <h3 style={{ fontSize: '1.2rem', margin: '0' }}>
             {getDaysUntil(stats.nextPeriod) !== null 
-              ? `${getDaysUntil(stats.nextPeriod)} days`
+              ? getDaysUntil(stats.nextPeriod) > 0
+                ? `${getDaysUntil(stats.nextPeriod)} days`
+                : getDaysUntil(stats.nextPeriod) === 0
+                  ? 'Today'
+                  : `${Math.abs(getDaysUntil(stats.nextPeriod))} days late`
               : 'N/A'
             }
           </h3>
-          <p style={{ opacity: '0.9', margin: '0.5rem 0 0 0' }}>Until Next Period</p>
+          <p style={{ opacity: '0.9', margin: '0.5rem 0 0 0' }}>
+            {getDaysUntil(stats.nextPeriod) !== null && getDaysUntil(stats.nextPeriod) < 0 
+              ? 'Period Status' 
+              : 'Until Next Period'
+            }
+          </p>
+          {aiPredictions && (
+            <div style={{ fontSize: '0.8rem', opacity: '0.8', marginTop: '0.5rem' }}>
+              🎯 {aiPredictions.nextPeriod.confidence}% accurate
+            </div>
+          )}
         </div>
+
+        {healthScore && analysisEngine && (
+          <div style={{ 
+            background: 'linear-gradient(135deg, #6f42c1, #e83e8c)', 
+            color: 'white', 
+            padding: '1rem', 
+            borderRadius: '8px',
+            textAlign: 'center'
+          }}>
+            <h3 style={{ fontSize: '1.2rem', margin: '0' }}>
+              {analysisEngine.patterns.anomalies?.anomalies?.length || 0}
+            </h3>
+            <p style={{ opacity: '0.9', margin: '0.5rem 0 0 0' }}>Health Alerts</p>
+            <div style={{ fontSize: '0.8rem', opacity: '0.8', marginTop: '0.5rem', textTransform: 'capitalize' }}>
+              {analysisEngine.patterns.anomalies?.riskLevel || 'low'} risk
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Enhanced Predictions Section */}
       <div style={{ marginTop: '2rem' }}>
-        <h3 style={{ color: '#c44569', marginBottom: '1rem' }}>🔮 Smart Predictions</h3>
+        <h3 style={{ color: 'var(--accent)', marginBottom: '1rem' }}>Smart Predictions</h3>
         
-        <div style={{ 
-          background: 'linear-gradient(135deg, #f8f9fa, #e9ecef)',
-          padding: '1.5rem',
-          borderRadius: '12px',
-          marginBottom: '1rem'
-        }}>
+              <div style={{ 
+                background: 'linear-gradient(135deg, var(--surface-2), var(--surface))',
+                padding: '1.5rem',
+                borderRadius: '12px',
+                marginBottom: '1rem'
+              }}>
           <div style={{ display: 'grid', gap: '1rem' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div>
@@ -142,24 +199,24 @@ function Dashboard() {
             
             {predictions.accuracy !== null && (
               <div style={{ 
-                background: '#e3f2fd',
+                background: 'var(--surface-2)',
                 padding: '1rem',
                 borderRadius: '8px',
                 fontSize: '0.9rem'
               }}>
-                <strong>📈 Historical Accuracy:</strong> {predictions.accuracy}% 
-                <span style={{ color: '#666', marginLeft: '0.5rem' }}>
+                <strong>Historical Accuracy:</strong> {predictions.accuracy}% 
+                <span style={{ color: 'var(--muted)', marginLeft: '0.5rem' }}>
                   (based on past {cycles.length - 2} predictions)
                 </span>
               </div>
             )}
             
             {predictions.cycleLengthVariance !== undefined && cycles.length > 2 && (
-              <div style={{ fontSize: '0.9rem', color: '#666' }}>
+              <div style={{ fontSize: '0.9rem', color: 'var(--muted)' }}>
                 <strong>Cycle Consistency:</strong> ±{predictions.cycleLengthVariance} days variation
-                {predictions.cycleLengthVariance <= 3 && <span style={{ color: '#28a745' }}> (Very Regular)</span>}
-                {predictions.cycleLengthVariance > 3 && predictions.cycleLengthVariance <= 7 && <span style={{ color: '#ffc107' }}> (Regular)</span>}
-                {predictions.cycleLengthVariance > 7 && <span style={{ color: '#dc3545' }}> (Variable)</span>}
+                {predictions.cycleLengthVariance <= 3 && <span style={{ color: 'var(--success)' }}> (Very Regular)</span>}
+                {predictions.cycleLengthVariance > 3 && predictions.cycleLengthVariance <= 7 && <span style={{ color: 'var(--warning)' }}> (Regular)</span>}
+                {predictions.cycleLengthVariance > 7 && <span style={{ color: 'var(--danger)' }}> (Variable)</span>}
               </div>
             )}
           </div>
@@ -167,14 +224,13 @@ function Dashboard() {
         
         {cycles.length < 3 && (
           <div style={{
-            background: '#fff3cd',
-            border: '1px solid #ffeaa7',
+            background: 'rgba(155,140,255,0.12)',
+            border: '1px solid var(--border)',
             borderRadius: '8px',
             padding: '1rem',
-            fontSize: '0.9rem',
-            color: '#856404'
+            fontSize: '0.9rem'
           }}>
-            <strong>💡 Tip:</strong> Track at least 3 cycles for more accurate predictions and confidence scoring!
+            <strong>Tip:</strong> Track at least 3 cycles for more accurate predictions and confidence scoring.
           </div>
         )}
       </div>

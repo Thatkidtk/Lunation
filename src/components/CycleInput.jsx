@@ -43,6 +43,11 @@ function CycleInput() {
 
     const startDate = new Date(formData.startDate);
     const endDate = formData.endDate ? new Date(formData.endDate) : null;
+
+    if (endDate && endDate < startDate) {
+      alert('End date cannot be before start date');
+      return;
+    }
     
     const cycleLength = endDate 
       ? Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24)) + 1

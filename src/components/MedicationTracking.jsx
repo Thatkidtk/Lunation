@@ -14,11 +14,11 @@ function MedicationTracking() {
   });
 
   const medicationTypes = [
-    { value: 'birth-control', label: '💊 Birth Control', icon: '💊' },
-    { value: 'pain-relief', label: '🩹 Pain Relief', icon: '🩹' },
-    { value: 'hormone', label: '⚗️ Hormone Therapy', icon: '⚗️' },
-    { value: 'supplement', label: '🌿 Supplement/Vitamin', icon: '🌿' },
-    { value: 'other', label: '💉 Other Medication', icon: '💉' }
+    { value: 'birth-control', label: 'Birth Control' },
+    { value: 'pain-relief', label: 'Pain Relief' },
+    { value: 'hormone', label: 'Hormone Therapy' },
+    { value: 'supplement', label: 'Supplement/Vitamin' },
+    { value: 'other', label: 'Other Medication' }
   ];
 
   const frequencies = [
@@ -100,27 +100,27 @@ function MedicationTracking() {
   return (
     <div className="card">
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-        <h2>💊 Medication & Supplement Tracking</h2>
+        <h2>Medication & Supplement Tracking</h2>
         <button
           onClick={() => setShowAddForm(!showAddForm)}
           className="btn"
           style={{
-            background: showAddForm ? '#6c757d' : '#28a745',
+            background: showAddForm ? '#6c757d' : 'linear-gradient(135deg, var(--accent), var(--accent-2))',
           }}
         >
-          {showAddForm ? '✕ Cancel' : '+ Add Medication'}
+          {showAddForm ? 'Cancel' : 'Add Medication'}
         </button>
       </div>
 
       {/* Add Medication Form */}
       {showAddForm && (
         <div style={{
-          background: 'linear-gradient(135deg, #f8f9fa, #e9ecef)',
+          background: 'linear-gradient(135deg, var(--surface-2), var(--surface))',
           padding: '1.5rem',
           borderRadius: '12px',
           marginBottom: '2rem'
         }}>
-          <h3 style={{ color: '#c44569', marginBottom: '1rem' }}>Add New Medication</h3>
+          <h3 style={{ color: 'var(--accent)', marginBottom: '1rem' }}>Add New Medication</h3>
           
           <form onSubmit={handleSubmit}>
             <div style={{ display: 'grid', gap: '1rem' }}>
@@ -258,7 +258,7 @@ function MedicationTracking() {
               </div>
 
               <button type="submit" className="btn">
-                💊 Add Medication
+                Add Medication
               </button>
             </div>
           </form>
@@ -270,17 +270,16 @@ function MedicationTracking() {
         <div style={{
           textAlign: 'center',
           padding: '2rem',
-          color: '#666',
-          background: 'linear-gradient(135deg, #f8f9fa, #e9ecef)',
+          color: 'var(--muted)',
+          background: 'linear-gradient(135deg, var(--surface-2), var(--surface))',
           borderRadius: '12px'
         }}>
-          <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>💊</div>
-          <h3 style={{ color: '#c44569' }}>No Medications Tracked</h3>
+          <h3 style={{ color: 'var(--accent)' }}>No Medications Tracked</h3>
           <p>Add medications, supplements, or birth control to track their effects on your cycle.</p>
         </div>
       ) : (
         <div>
-          <h3 style={{ color: '#c44569', marginBottom: '1rem' }}>
+          <h3 style={{ color: 'var(--accent)', marginBottom: '1rem' }}>
             Current Medications ({medications.filter(m => m.isActive).length} active)
           </h3>
           
@@ -289,8 +288,8 @@ function MedicationTracking() {
               const typeInfo = getTypeInfo(medication.type);
               return (
                 <div key={medication.id} style={{
-                  background: medication.isActive ? 'white' : '#f8f9fa',
-                  border: medication.isActive ? '2px solid #28a745' : '1px solid #dee2e6',
+                  background: medication.isActive ? 'var(--surface)' : 'var(--surface-2)',
+                  border: '1px solid var(--border)',
                   borderRadius: '12px',
                   padding: '1.5rem',
                   opacity: medication.isActive ? 1 : 0.7
@@ -298,10 +297,9 @@ function MedicationTracking() {
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                     <div style={{ flex: 1 }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
-                        <span style={{ fontSize: '1.5rem' }}>{typeInfo.icon}</span>
-                        <h4 style={{ margin: 0, color: '#c44569' }}>{medication.name}</h4>
+                        <h4 style={{ margin: 0, color: 'var(--accent)' }}>{medication.name}</h4>
                         <span style={{
-                          background: medication.isActive ? '#28a745' : '#6c757d',
+                          background: medication.isActive ? 'var(--success)' : '#6c757d',
                           color: 'white',
                           padding: '0.25rem 0.5rem',
                           borderRadius: '12px',
@@ -313,7 +311,7 @@ function MedicationTracking() {
                       </div>
                       
                       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', gap: '0.5rem', marginBottom: '1rem' }}>
-                        <div><strong>Type:</strong> {typeInfo.label.replace(/.*?\s/, '')}</div>
+                        <div><strong>Type:</strong> {typeInfo.label}</div>
                         {medication.dosage && <div><strong>Dosage:</strong> {medication.dosage}</div>}
                         <div><strong>Frequency:</strong> {frequencies.find(f => f.value === medication.frequency)?.label}</div>
                         <div><strong>Started:</strong> {formatDate(medication.startDate)}</div>
@@ -321,7 +319,7 @@ function MedicationTracking() {
                       
                       {medication.notes && (
                         <div style={{ 
-                          background: '#f8f9fa', 
+                          background: 'var(--surface-2)', 
                           padding: '0.75rem', 
                           borderRadius: '6px',
                           fontSize: '0.9rem',
@@ -339,10 +337,10 @@ function MedicationTracking() {
                         style={{
                           padding: '0.5rem 1rem',
                           fontSize: '0.875rem',
-                          background: medication.isActive ? '#ffc107' : '#28a745'
+                          background: medication.isActive ? 'var(--warning)' : 'var(--success)'
                         }}
                       >
-                        {medication.isActive ? '⏸️ Pause' : '▶️ Resume'}
+                        {medication.isActive ? 'Pause' : 'Resume'}
                       </button>
                       <button
                         onClick={() => deleteMedication(medication.id)}
@@ -350,10 +348,10 @@ function MedicationTracking() {
                         style={{
                           padding: '0.5rem 1rem',
                           fontSize: '0.875rem',
-                          background: '#dc3545'
+                          background: 'var(--danger)'
                         }}
                       >
-                        🗑️
+                        Delete
                       </button>
                     </div>
                   </div>
@@ -367,12 +365,12 @@ function MedicationTracking() {
       {/* Medication Insights */}
       {medications.length > 0 && (
         <div style={{
-          background: 'linear-gradient(135deg, #e3f2fd, #bbdefb)',
+          background: 'linear-gradient(135deg, var(--surface-2), var(--surface))',
           padding: '1.5rem',
           borderRadius: '12px',
           marginTop: '2rem'
         }}>
-          <h3 style={{ color: '#1976d2', marginBottom: '1rem' }}>💡 Medication Insights</h3>
+          <h3 style={{ color: 'var(--accent)', marginBottom: '1rem' }}>Medication Insights</h3>
           <div style={{ display: 'grid', gap: '0.5rem', fontSize: '0.95rem' }}>
             <div>
               <strong>Active Medications:</strong> {medications.filter(m => m.isActive).length} of {medications.length}

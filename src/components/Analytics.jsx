@@ -37,13 +37,12 @@ function Analytics() {
         <div style={{ 
           padding: '2rem', 
           textAlign: 'center', 
-          color: '#666',
-          background: 'linear-gradient(135deg, #f8f9fa, #e9ecef)',
+          color: 'var(--muted)',
+          background: 'linear-gradient(135deg, var(--surface-2), var(--surface))',
           borderRadius: '12px',
           margin: '1rem 0'
         }}>
-          <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>📊</div>
-          <h3 style={{ color: '#c44569', marginBottom: '0.5rem' }}>More Data Needed</h3>
+          <h3 style={{ color: 'var(--accent)', marginBottom: '0.5rem' }}>More Data Needed</h3>
           <p>Track at least 2 cycles to see detailed analytics and trends.</p>
           <p style={{ fontSize: '0.9rem', marginTop: '1rem' }}>
             Your insights will appear here as you add more cycle data!
@@ -87,7 +86,7 @@ function Analytics() {
     plugins: {
       legend: {
         position: 'top',
-      },
+        },
     },
     scales: {
       y: {
@@ -105,8 +104,8 @@ function Analytics() {
       {
         label: 'Cycle Length (days)',
         data: cycleLengthData,
-        borderColor: '#ff6b9d',
-        backgroundColor: 'rgba(255, 107, 157, 0.1)',
+        borderColor: '#9b8cff',
+        backgroundColor: 'rgba(155, 140, 255, 0.15)',
         tension: 0.4,
         fill: true
       }
@@ -120,14 +119,14 @@ function Analytics() {
         label: 'Symptom Frequency',
         data: Object.values(symptomFrequency),
         backgroundColor: [
-          '#ff6b9d',
-          '#c44569',
-          '#a8e6cf',
-          '#7fcdcd',
-          '#ffd93d',
-          '#ff9068',
-          '#ff6b9d',
-          '#c44569'
+          '#9b8cff',
+          '#5ce0ff',
+          '#3a2e8f',
+          '#2a7c7c',
+          '#9158ff',
+          '#483a97',
+          '#9b8cff',
+          '#5ce0ff'
         ],
         borderWidth: 0
       }
@@ -139,7 +138,7 @@ function Analytics() {
     datasets: [
       {
         data: [flowDistribution.light, flowDistribution.medium, flowDistribution.heavy],
-        backgroundColor: ['#a8e6cf', '#ffd93d', '#ff6b9d'],
+        backgroundColor: ['#2a7c7c', '#5ce0ff', '#9158ff'],
         borderWidth: 0
       }
     ]
@@ -159,7 +158,7 @@ function Analytics() {
 
   return (
     <div className="card">
-      <h2>📊 Analytics Dashboard</h2>
+      <h2>Analytics Dashboard</h2>
       
       {/* Key Insights */}
       <div style={{ 
@@ -169,7 +168,7 @@ function Analytics() {
         marginBottom: '2rem' 
       }}>
         <div style={{
-          background: 'linear-gradient(135deg, #ff6b9d, #c44569)',
+          background: 'linear-gradient(135deg, var(--accent), var(--accent-2))',
           color: 'white',
           padding: '1.5rem',
           borderRadius: '12px',
@@ -180,7 +179,7 @@ function Analytics() {
         </div>
 
         <div style={{
-          background: 'linear-gradient(135deg, #a8e6cf, #7fcdcd)',
+          background: 'linear-gradient(135deg, #3aa6a6, #5ce0ff)',
           color: 'white',
           padding: '1.5rem',
           borderRadius: '12px',
@@ -191,7 +190,7 @@ function Analytics() {
         </div>
 
         <div style={{
-          background: 'linear-gradient(135deg, #ffd93d, #ff9068)',
+          background: 'linear-gradient(135deg, #9158ff, #3a2e8f)',
           color: 'white',
           padding: '1.5rem',
           borderRadius: '12px',
@@ -203,15 +202,15 @@ function Analytics() {
       </div>
 
       {/* Charts Grid */}
-      <div style={{ display: 'grid', gap: '2rem' }}>
+        <div style={{ display: 'grid', gap: '2rem' }}>
         
         {/* Cycle Length Trend */}
         <div>
-          <h3 style={{ color: '#c44569', marginBottom: '1rem' }}>🔄 Cycle Length Trends</h3>
+          <h3 style={{ color: 'var(--accent)', marginBottom: '1rem' }}>Cycle Length Trends</h3>
           <div style={{ height: '300px' }}>
             <Line data={cycleLengthChartData} options={chartOptions} />
           </div>
-          <div style={{ marginTop: '1rem', fontSize: '0.9rem', color: '#666' }}>
+          <div style={{ marginTop: '1rem', fontSize: '0.9rem', color: 'var(--muted)' }}>
             <p><strong>Range:</strong> {shortestCycle} - {longestCycle} days</p>
             <p><strong>Consistency:</strong> {cycleVariability <= 3 ? 'Very Regular' : cycleVariability <= 7 ? 'Regular' : 'Variable'}</p>
           </div>
@@ -223,7 +222,7 @@ function Analytics() {
           {/* Symptom Frequency */}
           {Object.keys(symptomFrequency).length > 0 && (
             <div>
-              <h3 style={{ color: '#c44569', marginBottom: '1rem' }}>🤒 Symptom Patterns</h3>
+              <h3 style={{ color: 'var(--accent)', marginBottom: '1rem' }}>Symptom Patterns</h3>
               <div style={{ height: '250px' }}>
                 <Bar data={symptomChartData} options={{
                   ...chartOptions,
@@ -235,7 +234,7 @@ function Analytics() {
 
           {/* Flow Distribution */}
           <div>
-            <h3 style={{ color: '#c44569', marginBottom: '1rem' }}>🩸 Flow Intensity</h3>
+            <h3 style={{ color: 'var(--accent)', marginBottom: '1rem' }}>Flow Intensity</h3>
             <div style={{ height: '250px' }}>
               <Doughnut data={flowChartData} options={{
                 responsive: true,
@@ -249,12 +248,12 @@ function Analytics() {
 
         {/* Insights Section */}
         <div style={{
-          background: 'linear-gradient(135deg, #f8f9fa, #e9ecef)',
+          background: 'linear-gradient(135deg, var(--surface-2), var(--surface))',
           padding: '1.5rem',
           borderRadius: '12px',
           marginTop: '1rem'
         }}>
-          <h3 style={{ color: '#c44569', marginBottom: '1rem' }}>💡 Cycle Insights</h3>
+          <h3 style={{ color: 'var(--accent)', marginBottom: '1rem' }}>Cycle Insights</h3>
           <div style={{ display: 'grid', gap: '0.8rem' }}>
             <div>
               <strong>Cycle Regularity:</strong> 

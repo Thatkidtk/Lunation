@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useCycle } from '../contexts/CycleContext';
+import { sanitizeCSVCell } from '../utils/security';
 
 function DataExport() {
   const { state } = useCycle();
@@ -43,8 +44,8 @@ function DataExport() {
     });
 
     const csvContent = [
-      headers.join(','),
-      ...rows.map(row => row.map(cell => `"${cell}"`).join(','))
+      headers.map(sanitizeCSVCell).join(','),
+      ...rows.map(row => row.map(sanitizeCSVCell).join(','))
     ].join('\n');
 
     return csvContent;
@@ -53,7 +54,7 @@ function DataExport() {
   const generateJSON = () => {
     const exportData = {
       exportDate: new Date().toISOString(),
-      appVersion: '0.1.0-beta',
+      appVersion: '0.2.0',
       totalCycles: cycles.length,
       data: cycles.map((cycle, index) => ({
         cycleNumber: index + 1,
@@ -158,7 +159,7 @@ function DataExport() {
 
   const handleClearData = () => {
     const confirmed = window.confirm(
-      '⚠️ Are you sure you want to clear ALL your cycle data?\n\n' +
+      'Are you sure you want to clear ALL your cycle data?\n\n' +
       'This action cannot be undone. Consider exporting your data first.\n\n' +
       'Type "DELETE" to confirm this action.'
     );
@@ -174,35 +175,35 @@ function DataExport() {
 
   return (
     <div className="card">
-      <h2>📤 Data Management</h2>
+      <h2>Data Management</h2>
       
       {cycles.length === 0 ? (
         <div style={{
           textAlign: 'center',
           padding: '2rem',
-          color: '#666',
-          background: 'linear-gradient(135deg, #f8f9fa, #e9ecef)',
+          color: 'var(--muted)',
+          background: 'linear-gradient(135deg, var(--surface-2), var(--surface))',
           borderRadius: '12px'
         }}>
-          <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>📭</div>
-          <h3 style={{ color: '#c44569' }}>No Data to Export</h3>
+          <h3 style={{ color: 'var(--accent)' }}>No Data to Export</h3>
           <p>Start tracking your cycles to enable data export functionality.</p>
         </div>
       ) : (
         <>
           {/* Export Section */}
           <div style={{ marginBottom: '2rem' }}>
-            <h3 style={{ color: '#c44569', marginBottom: '1rem' }}>Export Your Data</h3>
+            <h3 style={{ color: 'var(--accent)', marginBottom: '1rem' }}>Export Your Data</h3>
             
             <div style={{ 
-              background: '#f8f9fa', 
+              background: 'var(--surface-2)', 
               padding: '1.5rem', 
               borderRadius: '12px',
-              marginBottom: '1.5rem'
+              marginBottom: '1.5rem',
+              border: '1px solid var(--border)'
             }}>
               <div style={{ marginBottom: '1rem' }}>
                 <p style={{ marginBottom: '1rem' }}>
-                  <strong>📊 Ready to Export:</strong> {cycles.length} cycles tracked
+                  <strong>Ready to Export:</strong> {cycles.length} cycles tracked
                 </p>
                 
                 <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', marginBottom: '1.5rem' }}>
@@ -239,7 +240,7 @@ function DataExport() {
                     gap: '0.5rem'
                   }}
                 >
-                  {isExporting ? '⏳ Preparing Download...' : `📥 Download ${exportFormat.toUpperCase()}`}
+                  {isExporting ? 'Preparing Download…' : `Download ${exportFormat.toUpperCase()}`}
                 </button>
               </div>
             </div>
@@ -247,13 +248,14 @@ function DataExport() {
             {/* Export Info */}
             <div style={{ 
               fontSize: '0.9rem', 
-              color: '#666',
-              background: '#e3f2fd',
+              color: 'var(--muted)',
+              background: 'linear-gradient(135deg, var(--surface-2), var(--surface))',
               padding: '1rem',
               borderRadius: '8px',
-              marginBottom: '2rem'
+              marginBottom: '2rem',
+              border: '1px solid var(--border)'
             }}>
-              <h4 style={{ margin: '0 0 0.5rem 0', color: '#1976d2' }}>💡 Export Information</h4>
+              <h4 style={{ margin: '0 0 0.5rem 0', color: 'var(--accent)' }}>Export Information</h4>
               <ul style={{ margin: '0', paddingLeft: '1.2rem' }}>
                 <li><strong>CSV Format:</strong> Perfect for spreadsheet analysis, healthcare providers</li>
                 <li><strong>JSON Format:</strong> Complete backup with all data and computed insights</li>
@@ -265,17 +267,17 @@ function DataExport() {
 
           {/* Data Preview */}
           <div style={{ marginBottom: '2rem' }}>
-            <h3 style={{ color: '#c44569', marginBottom: '1rem' }}>📋 Data Preview</h3>
+            <h3 style={{ color: 'var(--accent)', marginBottom: '1rem' }}>Data Preview</h3>
             <div style={{
-              background: '#f8f9fa',
-              border: '1px solid #dee2e6',
+              background: 'var(--surface-2)',
+              border: '1px solid var(--border)',
               borderRadius: '8px',
               overflow: 'hidden'
             }}>
               <div style={{
-                background: '#e9ecef',
+                background: 'var(--surface-2)',
                 padding: '0.75rem 1rem',
-                borderBottom: '1px solid #dee2e6',
+                borderBottom: '1px solid var(--border)',
                 fontWeight: '600'
               }}>
                 Recent Cycles ({Math.min(5, cycles.length)} of {cycles.length})
@@ -284,7 +286,7 @@ function DataExport() {
                 {cycles.slice(-5).reverse().map((cycle, index) => (
                   <div key={cycle.id} style={{
                     padding: '0.75rem 1rem',
-                    borderBottom: index < 4 ? '1px solid #f1f3f4' : 'none',
+                    borderBottom: index < 4 ? '1px solid var(--border)' : 'none',
                     fontSize: '0.9rem'
                   }}>
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr 1fr', gap: '1rem' }}>
@@ -308,13 +310,13 @@ function DataExport() {
 
           {/* Danger Zone */}
           <div style={{
-            background: 'linear-gradient(135deg, #fff5f5, #fed7d7)',
-            border: '1px solid #feb2b2',
+            background: 'linear-gradient(135deg, rgba(220,53,69,0.15), rgba(220,53,69,0.05))',
+            border: '1px solid var(--border)',
             borderRadius: '12px',
             padding: '1.5rem'
           }}>
-            <h3 style={{ color: '#e53e3e', marginBottom: '1rem' }}>⚠️ Danger Zone</h3>
-            <p style={{ marginBottom: '1rem', color: '#744210' }}>
+            <h3 style={{ color: 'var(--danger)', marginBottom: '1rem' }}>Danger Zone</h3>
+            <p style={{ marginBottom: '1rem' }}>
               <strong>Clear All Data:</strong> Permanently delete all your cycle data from this browser.
               This action cannot be undone.
             </p>
@@ -322,12 +324,12 @@ function DataExport() {
               onClick={handleClearData}
               className="btn"
               style={{
-                background: '#e53e3e',
+                background: 'var(--danger)',
                 color: 'white',
                 border: 'none'
               }}
             >
-              🗑️ Clear All Data
+              Clear All Data
             </button>
           </div>
         </>
