@@ -48,6 +48,13 @@ function CycleInput() {
       alert('End date cannot be before start date');
       return;
     }
+    if (endDate) {
+      const bleedDays = Math.ceil((endDate - startDate) / 86400000) + 1;
+      if (bleedDays < 2 || bleedDays > 10) {
+        alert('Please enter a realistic period length (2-10 days).');
+        return;
+      }
+    }
     
     const cycleLength = endDate 
       ? Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24)) + 1
