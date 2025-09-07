@@ -71,6 +71,7 @@ function cycleReducer(state, action) {
 export function CycleProvider({ children }) {
   const [state, dispatch] = useReducer(cycleReducer, initialState);
   const [encryption, setEncryption] = useState({ enabled: false, locked: false, passphrase: null });
+  const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
     try {
@@ -104,11 +105,15 @@ export function CycleProvider({ children }) {
       });
     } catch (_e) {
       // Ignore malformed storage
+    } finally {
+      // Mark hydrated regardless so we don't overwrite storage before initial load completes
+      setHydrated(true);
     }
   }, []);
 
   useEffect(() => {
     const persist = async () => {
+      if (!hydrated) return; // Avoid overwriting storage before initial hydration
       const payload = { ...state, _version: SCHEMA_VERSION };
       if (encryption.enabled) {
         if (encryption.locked || !encryption.passphrase) {
@@ -128,12 +133,13 @@ export function CycleProvider({ children }) {
     };
     persist();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [state, encryption.enabled, encryption.locked, encryption.passphrase]);
+  }, [state, encryption.enabled, encryption.locked, encryption.passphrase, hydrated]);
 
   // Debounced periodic flush and on visibility change
   useEffect(() => {
     let intervalId;
     const flush = () => {
+      if (!hydrated) return;
       const payload = { ...state, _version: SCHEMA_VERSION };
       if (!encryption.enabled) {
         safeLocalStorageSet(STORAGE_KEY, payload);
@@ -147,7 +153,7 @@ export function CycleProvider({ children }) {
       if (intervalId) window.clearInterval(intervalId);
       document.removeEventListener('visibilitychange', onVis);
     };
-  }, [state, encryption.enabled]);
+  }, [state, encryption.enabled, hydrated]);
 
   // Controls for encryption
   const unlock = async (passphrase) => {

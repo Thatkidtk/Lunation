@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useCycle } from '../contexts/CycleContext';
 import { calculatePredictions } from '../utils/cycleCalculations';
+import { toast } from '../ui/Toast';
+import { ariaAnnounce } from '../ui/aria/LiveRegion';
 
 function CycleInput() {
   const { state, dispatch } = useCycle();
@@ -75,6 +77,10 @@ function CycleInput() {
     const updatedCycles = [...state.cycles, newCycle];
     const predictions = calculatePredictions(updatedCycles);
     dispatch({ type: 'UPDATE_PREDICTIONS', payload: predictions });
+
+    // Friendly feedback
+    toast.success('Cycle added');
+    ariaAnnounce('Cycle added');
 
     setFormData({
       startDate: '',
