@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { useCycle } from '../contexts/CycleContext';
+import { toast } from '../ui/Toast';
+import { ariaAnnounce } from '../ui/aria/LiveRegion';
 
 function MedicationTracking() {
   const { state, dispatch } = useCycle();
@@ -39,6 +41,8 @@ function MedicationTracking() {
     }));
   };
 
+  const [newId, setNewId] = useState(null);
+
   const handleSubmit = (e) => {
     e.preventDefault();
     
@@ -55,6 +59,11 @@ function MedicationTracking() {
     };
 
     dispatch({ type: 'ADD_MEDICATION', payload: newMedication });
+    setNewId(newMedication.id);
+
+    // Feedback
+    toast.success(`Medication “${newMedication.name}” added`);
+    ariaAnnounce(`Medication ${newMedication.name} added`);
 
     // Reset form
     setFormData({
@@ -75,13 +84,20 @@ function MedicationTracking() {
     });
   };
 
-  const deleteMedication = (medicationId) => {
-    if (window.confirm('Are you sure you want to delete this medication?')) {
-      dispatch({ 
-        type: 'DELETE_MEDICATION', 
-        payload: { id: medicationId }
-      });
-    }
+  const deleteMedication = (medication) => {
+    // Immediate UI removal
+    dispatch({ type: 'DELETE_MEDICATION', payload: { id: medication.id } });
+    // Undo pattern via toast action (6s)
+    toast.infoAction(`Deleted “${medication.name}”`, 6000, {
+      label: 'Undo',
+      onClick: () => {
+        dispatch({ type: 'ADD_MEDICATION', payload: medication });
+        toast.success(`Restored “${medication.name}”`);
+        ariaAnnounce(`Restored ${medication.name}`);
+        setNewId(medication.id);
+      }
+    });
+    ariaAnnounce(`Deleted ${medication.name}. Undo available`);
   };
 
   const getTypeInfo = (type) => {
@@ -104,6 +120,7 @@ function MedicationTracking() {
         <button
           onClick={() => setShowAddForm(!showAddForm)}
           className="btn"
+          data-testid="add-medication-toggle"
           style={{
             background: showAddForm ? '#6c757d' : 'linear-gradient(135deg, var(--accent), var(--accent-2))',
           }}
@@ -136,6 +153,7 @@ function MedicationTracking() {
                     onChange={handleInputChange}
                     placeholder="e.g., Birth Control Pill, Ibuprofen, Iron Supplement"
                     required
+                    data-testid="medication-name-input"
                     style={{
                       width: '100%',
                       padding: '0.75rem',
@@ -257,7 +275,7 @@ function MedicationTracking() {
                 />
               </div>
 
-              <button type="submit" className="btn">
+              <button type="submit" className="btn" data-testid="submit-add-medication">
                 Add Medication
               </button>
             </div>
@@ -287,14 +305,14 @@ function MedicationTracking() {
             {medications.map(medication => {
               const typeInfo = getTypeInfo(medication.type);
               return (
-                <div key={medication.id} style={{
+                <div key={medication.id} data-testid={`medication-card-${medication.id}`} style={{
                   background: medication.isActive ? 'var(--surface)' : 'var(--surface-2)',
                   border: '1px solid var(--border)',
                   borderRadius: '12px',
                   padding: '1.5rem',
                   opacity: medication.isActive ? 1 : 0.7
                 }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }} className={newId === medication.id ? 'scale-in' : ''} onAnimationEnd={() => { if (newId === medication.id) setNewId(null); }}>
                     <div style={{ flex: 1 }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
                         <h4 style={{ margin: 0, color: 'var(--accent)' }}>{medication.name}</h4>
@@ -343,13 +361,14 @@ function MedicationTracking() {
                         {medication.isActive ? 'Pause' : 'Resume'}
                       </button>
                       <button
-                        onClick={() => deleteMedication(medication.id)}
+                        onClick={() => deleteMedication(medication)}
                         className="btn"
                         style={{
                           padding: '0.5rem 1rem',
                           fontSize: '0.875rem',
                           background: 'var(--danger)'
                         }}
+                        aria-label={`Delete medication ${medication.name}`}
                       >
                         Delete
                       </button>
