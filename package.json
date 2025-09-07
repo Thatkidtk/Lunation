@@ -2,7 +2,7 @@
   "name": "lunation",
   "version": "3.0.0",
   "private": true,
-  "description": "A comprehensive, privacy-focused React web application for tracking menstrual cycles, predicting periods, and monitoring fertility windows.",
+  "description": "Private, mobile-first cycle tracker to log periods, symptoms, and medications with on-device storage and smart predictions.",
   "keywords": [
     "menstrual-cycle",
     "period-tracking",
