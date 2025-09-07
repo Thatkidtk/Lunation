@@ -13,6 +13,9 @@
   ],
   "author": "Thomas Kase Black",
   "homepage": ".",
+  "engines": {
+    "node": "20.x"
+  },
   "dependencies": {
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^14.5.2",
@@ -33,7 +36,10 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "test": "vitest run"
+    "test": "vitest run",
+    "build:gh": "VITE_BASE_PATH=/Lunation/ vite build",
+    "pages": "rm -rf docs && cp -r dist docs && cp docs/index.html docs/404.html || true",
+    "deploy:gh": "npm run build:gh && npm run pages"
   },
   "eslintConfig": {
     "extends": [
