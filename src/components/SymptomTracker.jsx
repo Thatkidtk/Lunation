@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useCycle } from '../contexts/CycleContext';
 import { createAnalysisEngine } from '../utils/aiPredictions';
+import { toast } from '../ui/Toast';
+import { ariaAnnounce } from '../ui/aria/LiveRegion';
 
 function SymptomTracker() {
   const { state, dispatch } = useCycle();
@@ -127,8 +129,9 @@ function SymptomTracker() {
       payload: { ...state, symptoms: allSymptoms }
     });
 
-    // Show success message (you could add a toast notification here)
-    alert('Symptoms saved successfully!');
+    // Feedback
+    toast.success('Symptoms saved');
+    ariaAnnounce('Symptoms saved');
   };
 
   const renderSymptomInsights = () => {
