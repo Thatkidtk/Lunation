@@ -137,6 +137,10 @@ body {
   position: relative;
 }
 
+/* Subtle scale/fade on new card */
+@keyframes scaleInCard { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
+.card.scale-in { animation: scaleInCard 200ms ease-out; }
+
 .card-glass {
   background: var(--surface-glass);
   border-radius: 16px;
