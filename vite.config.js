@@ -25,6 +25,16 @@ export default defineConfig({
   test: {
     environment: 'jsdom',
     globals: true,
-    setupFiles: './src/setupTests.js'
+    setupFiles: './src/setupTests.js',
+    include: [
+      'src/**/*.{test,spec}.{js,jsx,ts,tsx}',
+      'src/**/__tests__/**/*.{js,jsx,ts,tsx}',
+    ],
+    exclude: [
+      'tests/**', // exclude Playwright e2e
+      'e2e/**',
+      'node_modules/**',
+      'dist/**',
+    ],
   }
 })
